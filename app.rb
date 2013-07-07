@@ -79,13 +79,13 @@ class NikePlusToRunkeeperImporter < Sinatra::Base
       duration = nike_activity.duration / 1000
 
       runkeeper_activity = {
-        :type => 'Running',
-        :start_time => nike_activity.start_time_utc,
-        :total_distance => nike_activity.distance * 1000,
-        :duration => duration,
-        :detect_pauses => true,
-        :total_calories => nike_activity.total_calories.to_f,
-        :average_heart_rate => nike_activity.average_heart_rate.to_f
+        type: 'Running',
+        start_time: nike_activity.start_time_utc,
+        total_distance: nike_activity.distance * 1000,
+        duration: duration,
+        detect_pauses: true,
+        total_calories: nike_activity.total_calories.to_f,
+        average_heart_rate: nike_activity.average_heart_rate.to_f
       }
 
       if a.gps
@@ -93,14 +93,12 @@ class NikePlusToRunkeeperImporter < Sinatra::Base
         fraction = duration / nike_activity.geo.waypoints.size
 
         runkeeper_activity[:path] = nike_activity.geo.waypoints.map do |wp|
-          index += 1
-
           {
-            :timestamp => fraction * index,
-            :altitude => wp['ele'],
-            :longitude => wp['lon'],
-            :latitude => wp['lat'],
-            :type => 'gps'
+            timestamp: fraction * (index += 1),
+            altitude: wp['ele'],
+            longitude: wp['lon'],
+            latitude: wp['lat'],
+            type: 'gps'
           }
         end
       end
@@ -114,10 +112,9 @@ class NikePlusToRunkeeperImporter < Sinatra::Base
   post '/export' do
     return redirect to('/') unless signed_in?
 
-    puts user
     activities = params[:activities]
     activities.each do |activity|
-      parsed = JSON.parse(activity, :symbolize_names => true)
+      parsed = JSON.parse(activity, symbolize_names: true)
       parsed[:start_time] = Time.parse(parsed[:start_time]).httpdate
 
       HealthGraph::NewFitnessActivity.new(user.token, parsed)
