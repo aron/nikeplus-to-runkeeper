@@ -4,6 +4,7 @@ require 'sinatra/flash'
 require 'sinatra/reloader'
 require 'health_graph'
 require 'nike'
+require 'geoutm'
 
 APP_DOMAIN = ENV['APP_DOMAIN'] || 'http://localhost:9292'
 APP_SECRET = ENV['APP_SECRET'] || 'nikeplus-to-runkeeper'
@@ -90,17 +91,49 @@ class NikePlusToRunkeeperImporter < Sinatra::Base
 
       if a.gps
         index = -1
-        fraction = duration / nike_activity.geo.waypoints.size
+        total = nike_activity.geo.waypoints.size
+        fraction = duration / total
+        last_path = nil
+        last_delta = nil
 
-        runkeeper_activity[:path] = nike_activity.geo.waypoints.map do |wp|
-          {
+        paths = []
+        nike_activity.geo.waypoints.each_with_index do |wp, index|
+          type = 'gps'
+          type = 'start' if index == 0
+          type = 'end'   if (index + 1) == total
+
+          path = {
             timestamp: fraction * (index += 1),
             altitude: wp['ele'],
             longitude: wp['lon'],
             latitude: wp['lat'],
-            type: 'gps'
+            type: type
           }
+
+          # Account for pauses in the run by calculating the distance between
+          # waypoints, when we detect a large enough jump we assume the run
+          # was paused and add a "pause" waypoing into the path.
+          if last_path
+            next_utm = GeoUtm::LatLon.new(path[:latitude], path[:longitude]).to_utm
+            last_utm = GeoUtm::LatLon.new(last_path[:latitude], last_path[:longitude]).to_utm
+            delta = last_utm.distance_to(next_utm)
+
+            if last_delta && delta > 0 && delta > (last_delta * 2)
+              # For some reason the API does not like a "resume" node to be
+              # added afterwards but will detect the next point just fine.
+              paused_path = last_path.clone
+              paused_path[:type] = 'pause'
+
+              paths << paused_path.clone
+            end
+
+            last_delta = delta if delta > 0
+          end
+
+          paths << last_path = path
         end
+
+        runkeeper_activity[:path] = paths
       end
 
       runkeeper_activity
