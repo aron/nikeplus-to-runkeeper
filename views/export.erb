@@ -1,0 +1,38 @@
+<form id="activities-form" action="<%= url('/export') %>" method="post">
+  <table>
+    <thead>
+      <tr>
+        <td>
+          <label>Activity</label>
+        </td>
+        <td>
+          <input id="select-all" type="checkbox" />
+        </td>
+      </tr>
+    </thead>
+    <% activities.each_with_index do |activity, index| %>
+      <tr>
+        <td>
+          <label for="activity-<%= index %>"><%= activity[:start_time].strftime('%A %-d %B %Y') %> <%= '%.3g' % (activity[:total_distance] / 1000) %>km</label>
+        </td>
+        <td>
+          <input id="activity-<%= index %>" type="checkbox" name="activities[]" value="<%= Rack::Utils.escape_html(JSON.generate(activity)) %>" />
+        </td>
+      </tr>
+    <% end %>
+  </table>
+  <div><button type="submit">Upload</button></div>
+</form>
+
+<script>
+  (function () {
+    var activities = document.querySelectorAll('[name="activities[]"]');
+    var selectAll = document.querySelector('#select-all');
+
+    selectAll.addEventListener('change', function () {
+      for(var index = 0, length = activities.length; index < length; index += 1) {
+        activities[index].checked = selectAll.checked;
+      }
+    }, false);
+  })();
+</script>

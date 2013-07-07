@@ -1,0 +1,14 @@
+<% if flash[:info] %>
+  <p><%= flash[:info] %></p>
+<% end %>
+
+<form action="<%= url('/import') %>" method="post">
+  <input type="email" name="email" placeholder="nike@example.com" />
+  <input type="password" name="password" placeholder="" />
+  <select name="activity_since">
+    <% periods.each do |period| %>
+      <option value="<%= period[:value] %>"><%= period[:name] %></option>
+    <% end %>
+  </select>
+  <button type="submit">Import</button>
+</form>
