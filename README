@@ -58,6 +58,17 @@ currently each reading is assigned a timestamp based on a fraction of the total
 run time. This is okay for most situations, but can lead to odd results when
 a run has been paused and resumed.
 
+Alternatives
+------------
+
+Some alternatives that I found while researching this project:
+
+- https://mattstuehler.com/lab/NikePlus/
+- http://nikeplusexporter.rhysmccaig.com
+- http://jkili.wordpress.com/2012/08/17/nike-gpx-export/
+- http://trailrunnerx.com
+- https://gist.github.com/leah/5655437
+
 TODO
 ----
 
