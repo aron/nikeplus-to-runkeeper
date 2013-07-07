@@ -1,0 +1,71 @@
+Nike+ to RunKeeper Importer
+===========================
+
+A web interface for exporting your running data from Nike+ and then importing
+into RunKeeper. This was built because existing tools providing this
+functionality require you to input your email/password for a Nike+ account.
+
+Due to the nature of the Nike API this app requires the same details, but
+through building it on open software and the user running it on thier own
+machine at least there is a little more transparency.
+
+This should be considered a work in progress, it functions but is very
+rough around the edges. Feedback is welcome though, just open a new issue
+on this project or email me at hello@aroncarroll.com.
+
+Installation
+------------
+
+You will need to create a RunKeeper app in order to run the server. This can
+be created at http://runkeeper.com/partner/applications, doing so will give
+you an client ID and secret.
+
+After cloning the repository into a local folder you will need to install the
+dependancies using bundler. If you do not have bundler installed
+`gem install bundler` will set you right.
+
+    $ bundle
+
+Configuration
+-------------
+
+    APP_SECRET: A random string used to encode the session keys.
+    RUNKEEPER_CLIENT_ID: Your RunKeeper app id.
+    RUNKEEPER_CLIENT_SECRET: You RunKeeper app secret.
+
+Usage
+-----
+
+Start the app with the runkeeper settings and a secret token for the sessions,
+this is done using environment variables (replace tokens in curly braces with
+your own settings).
+
+    $ APP_SECRET={some_random_string} \
+    > RUNKEEPER_CLIENT_ID={client_id} \
+    > RUNKEEPER_CLIENT_SECRET={client_secret} \
+    > bundle exec rackup
+
+Visit http://localhost:9292 in your browser and select login. You will then be
+prompted to authorise the app with RunKeeper, then you will need to enter your
+Nike+ details. This will present you with a list of past activities, select the
+ones you want to import and submit the form.
+
+Limitations
+-----------
+
+The Nike+ API does not provide any timing data for it's GPS co-ordinates so
+currently each reading is assigned a timestamp based on a fraction of the total
+run time. This is okay for most situations, but can lead to odd results when
+a run has been paused and resumed.
+
+TODO
+----
+
+- Allow Nike authorisation without email/password.
+- Syncing of new runs via cron.
+- Export of Nike data to .gpx format.
+
+License
+-------
+
+Available under an MIT License
