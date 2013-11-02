@@ -37,8 +37,8 @@ Usage
 -----
 
 Start the app with the runkeeper settings and a secret token for the sessions,
-this is done using environment variables (replace tokens in curly braces with
-your own settings).
+this is done using environment variables (replace the tokens eg. `{client_id}`
+with your own settings).
 
     $ APP_SECRET={some_random_string} \
     > RUNKEEPER_CLIENT_ID={client_id} \
