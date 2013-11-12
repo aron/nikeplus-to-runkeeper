@@ -70,7 +70,15 @@ class NikePlusToRunkeeperImporter < Sinatra::Base
     return redirect to('/') unless signed_in?
 
     nike_client = Nike::Client.new(params[:email], params[:password])
-    nike_activities = nike_client.activities
+    begin
+      nike_activities = nike_client.activities
+    rescue RuntimeError => e
+      raise e unless e.message == "add_cookies only takes a Hash or a String"
+
+      flash[:info] = "Failed to log in to NikePlus, are your email and password correct?"
+      return redirect to('/import')
+    end
+
     activity_cutoff = Time.parse(params[:activity_since]) unless params[:activity_since].to_s.empty?
 
     runkeeper_activities = nike_activities.map do |a|
