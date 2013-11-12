@@ -85,14 +85,14 @@ class NikePlusToRunkeeperImporter < Sinatra::Base
         total_distance: nike_activity.distance * 1000,
         duration: duration,
         detect_pauses: true,
-        total_calories: nike_activity.total_calories.to_f,
+        total_calories: nike_activity.calories.to_f,
         average_heart_rate: nike_activity.average_heart_rate.to_f
       }
 
-      if a.gps
+      if a.gps && nike_activity.geo
         index = -1
         total = nike_activity.geo.waypoints.size
-        fraction = duration / total
+        fraction = duration.to_f / total.to_f
         last_path = nil
         last_delta = nil
 
