@@ -89,13 +89,17 @@ class NikePlusToRunkeeperImporter < Sinatra::Base
 
       runkeeper_activity = {
         type: 'Running',
-        start_time: nike_activity.start_time_utc,
+        start_time: nike_activity.start_time_utc + nike_activity.start_time_utc.gmt_offset, # hack: adjust time by gmt_offset to get in local time, which is what Runkeeper wants
         total_distance: nike_activity.distance * 1000,
         duration: duration,
         detect_pauses: true,
         total_calories: nike_activity.calories.to_f,
-        average_heart_rate: nike_activity.average_heart_rate.to_f
+        average_heart_rate: nike_activity.average_heart_rate.to_f,
       }
+
+      if nike_activity.tags.note
+        runkeeper_activity.notes = nike_activity.tags.note
+      end
 
       if a.gps && nike_activity.geo && nike_activity.geo.waypoints
         index = -1
