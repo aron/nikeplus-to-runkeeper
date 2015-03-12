@@ -85,7 +85,7 @@ class NikePlusToRunkeeperImporter < Sinatra::Base
       next if activity_cutoff && a.start_time_utc < activity_cutoff
 
       nike_activity = nike_client.activity(a.activity_id)
-      duration = nike_activity.duration / 1000
+      duration = nike_activity.duration / 1000.0
 
       runkeeper_activity = {
         type: 'Running',
@@ -104,7 +104,7 @@ class NikePlusToRunkeeperImporter < Sinatra::Base
       if a.gps && nike_activity.geo && nike_activity.geo.waypoints
         index = -1
         total = nike_activity.geo.waypoints.size
-        fraction = duration.to_f / total.to_f
+        fraction = duration / total
         last_path = nil
         last_delta = nil
 
